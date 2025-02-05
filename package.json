@@ -9,18 +9,19 @@
     "test": "jest"
   },
   "dependencies": {
-    "express": "^4.18.2",
     "commander": "^10.0.0",
     "dotenv": "^16.0.0",
+    "express": "^4.18.2",
     "express-rate-limit": "^6.0.0",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@types/node": "latest",
-    "@types/express": "latest",
     "@types/commander": "latest",
-    "typescript": "^5.0.0",
+    "@types/express": "latest",
+    "@types/jest": "latest",
+    "@types/node": "latest",
     "jest": "^29.0.0",
-    "@types/jest": "latest"
+    "typescript": "^5.0.0"
   }
 }
