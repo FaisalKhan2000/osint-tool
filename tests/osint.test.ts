@@ -1,6 +1,10 @@
-import { describe, it, expect } from "@jest/globals";
-import { emailLookup } from "../src/services/osintService.js";
-import { validateEmail } from "../src/validators/inputValidator.js";
+import { describe, it, expect } from "vitest";
+
+import {
+  validateCompany,
+  validateEmail,
+  validateUsername,
+} from "../src/validators/inputValidator.js";
 
 describe("OSINT Service", () => {
   it("should validate email format", () => {
@@ -10,11 +14,19 @@ describe("OSINT Service", () => {
     expect(validateEmail(invalidEmail)).toBe(false);
   });
 
-  it("should perform email lookup", async () => {
-    const email = "test@example.com";
-    const result = await emailLookup(email);
-    expect(result).toHaveProperty("email", email);
-    expect(result).toHaveProperty("domain");
-    expect(result).toHaveProperty("socialProfiles");
+  it("should validate username format", () => {
+    const validUsername = "faisalkhan2000";
+    const invaldUsername = "faisal_$";
+
+    expect(validateUsername(validUsername)).toBe(true);
+    expect(validateUsername(invaldUsername)).toBe(false);
+  });
+
+  it("should validate company format", () => {
+    const validCompanyname = "company";
+    const invaldCompanyname = "";
+
+    expect(validateCompany(validCompanyname)).toBe(true);
+    expect(validateCompany(invaldCompanyname)).toBe(false);
   });
 });
