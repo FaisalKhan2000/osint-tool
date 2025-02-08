@@ -1,6 +1,10 @@
 import z from "zod";
 
-export const emailSchema = z.string().email();
+export const emailSchema = z
+  .string()
+  .email("Invalid email address")
+  .min(5, "Email must be at least 5 characters long")
+  .max(50, "Email must be at most 50 characters long");
 
 export const usernameSchema = z
   .string()
@@ -14,4 +18,5 @@ export const usernameSchema = z
 export const companySchema = z
   .string()
   .trim()
-  .min(1, "Company name cannot be empty");
+  .min(1, "Company name cannot be empty")
+  .max(100, "Company name must be at most 100 characters long");
