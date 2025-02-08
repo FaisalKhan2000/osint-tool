@@ -1,0 +1,4 @@
+Tasks for 07/02/2025:
+1. Learn about winston
+2. Understand APIEror and ErrorHanlder
+3. test api error and zod error

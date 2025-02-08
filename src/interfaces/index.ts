@@ -1,4 +1,18 @@
-// src/interfaces/index.ts
+export interface ErrorDetails {
+  code?: string;
+  details?: Record<string, any>;
+  source?: string;
+  timestamp?: string;
+}
+
+export interface ErrorResponse {
+  status: number;
+  message: string;
+  errors?: any[];
+  timestamp: string;
+  path: string;
+  requestId?: string;
+}
 
 export interface EmailLookupResult {
   email: string;
