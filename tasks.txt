@@ -1,4 +1,5 @@
-Tasks for 07/02/2025:
-1. Learn about winston
-2. Understand APIEror and ErrorHanlder
-3. test api error and zod error
+Tasks for 10/02/2025:
+1. understand winston
+2. Understand APIEror and ErrorHandler
+3. remove the server bullshit and add all the errors hanlder to commander itself
+4. change the api errors to something else like cli
