@@ -8,18 +8,6 @@ if (!fs.existsSync(LOG_DIR)) {
   fs.mkdirSync(LOG_DIR);
 }
 
-// Custom format for better error logging
-const errorStackFormat = winston.format((error) => {
-  if (error instanceof Error) {
-    // Object.assign(source, target, additional properties)
-    return Object.assign({}, error, {
-      stack: error.stack,
-      message: error.message,
-    });
-  }
-  return error;
-});
-
 // Define log files
 const ERROR_LOG_FILE = path.join(LOG_DIR, "error.log");
 const COMBINED_LOG_FILE = path.join(LOG_DIR, "combined.log");
@@ -27,7 +15,6 @@ const COMBINED_LOG_FILE = path.join(LOG_DIR, "combined.log");
 export const errorLogger = winston.createLogger({
   level: "error",
   format: winston.format.combine(
-    errorStackFormat(),
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     winston.format.errors({ stack: true }),
     winston.format.metadata(),
