@@ -1,6 +1,5 @@
 import { ErrorRequestHandler, Response } from "express";
 import APIError from "../utils/APIError";
-
 import z from "zod";
 import { errorLogger } from "../utils/logger";
 import { ErrorDetails } from "../interfaces";
@@ -9,7 +8,8 @@ const handleZodError = (
   res: Response,
   error: z.ZodError,
   path: string,
-  requestId: string
+  requestId: string,
+  ip: string
 ): void => {
   const validationErrors = error.issues.map((issue) => ({
     field: issue.path.join("."),
@@ -25,25 +25,28 @@ const handleZodError = (
 
   const apiError = APIError.badRequest("Validation Error", errorDetails);
 
-  handleAPIError(res, apiError, path, requestId);
+  handleAPIError(res, apiError, path, requestId, ip);
 };
 
 const handleAPIError = (
   res: Response,
   error: APIError,
   path: string,
-  requestId: string
+  requestId: string,
+  ip: string
 ): void => {
   const response = {
     ...error.toJSON(),
     path,
     requestId,
+    ip,
   };
 
   errorLogger.error("API Error", {
     ...error.errorDetails,
     path,
     requestId,
+    ip,
     stack: error.stack,
   });
 
@@ -54,11 +57,14 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
   const requestId =
     (req.headers["x-request-id"] as string) ||
     Math.random().toString(36).substring(7);
+  const forwardedFor = req.headers['x-forwarded-for'];
+  const ip = Array.isArray(forwardedFor) ? forwardedFor[0] : forwardedFor || req.ip || req.connection.remoteAddress || "unknown";
 
   const errorContext = {
     method: req.method,
     path: req.path,
     requestId,
+    ip,
     query: req.query,
     body: req.body,
     headers: req.headers,
@@ -66,15 +72,15 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 
   try {
     if (error instanceof z.ZodError) {
-      handleZodError(res, error, req.path, requestId);
+      handleZodError(res, error, req.path, requestId, ip);
     } else if (error instanceof APIError) {
-      handleAPIError(res, error, req.path, requestId);
+      handleAPIError(res, error, req.path, requestId, ip);
     } else if (error.name === "NotFoundError") {
       const notFoundError = APIError.notFound("Resource not found", {
         code: "RESOURCE_NOT_FOUND",
         source: req.path,
       });
-      handleAPIError(res, notFoundError, req.path, requestId);
+      handleAPIError(res, notFoundError, req.path, requestId, ip);
     } else {
       // Handle unknown errors
       errorLogger.error("Unhandled Error", {
@@ -93,7 +99,7 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
           details: process.env.NODE_ENV === "development" ? error : undefined,
         }
       );
-      handleAPIError(res, internalError, req.path, requestId);
+      handleAPIError(res, internalError, req.path, requestId, ip);
     }
   } catch (handlingError) {
     // Fallback error handler
@@ -113,6 +119,6 @@ export const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
           process.env.NODE_ENV === "development" ? handlingError : undefined,
       },
     });
-    handleAPIError(res, fallbackError, req.path, requestId);
+    handleAPIError(res, fallbackError, req.path, requestId, ip);
   }
 };
