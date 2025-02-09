@@ -1,19 +1,26 @@
 import winston from "winston";
 import path from "path";
+import fs from "fs";
+
+// Ensure log directory exists
+const LOG_DIR = "logs";
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR);
+}
 
 // Custom format for better error logging
-const errorStackFormat = winston.format((info) => {
-  if (info instanceof Error) {
-    return Object.assign({}, info, {
-      stack: info.stack,
-      message: info.message,
+const errorStackFormat = winston.format((error) => {
+  if (error instanceof Error) {
+    // Object.assign(source, target, additional properties)
+    return Object.assign({}, error, {
+      stack: error.stack,
+      message: error.message,
     });
   }
-  return info;
+  return error;
 });
 
-// Define log directory and files
-const LOG_DIR = "logs";
+// Define log files
 const ERROR_LOG_FILE = path.join(LOG_DIR, "error.log");
 const COMBINED_LOG_FILE = path.join(LOG_DIR, "combined.log");
 
